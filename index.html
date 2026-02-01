@@ -2,35 +2,165 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Test</title>
+  <title>Futbol Koleksiyonum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+
     .card {
       border: 2px solid black;
       padding: 10px;
       text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+
+    .card img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: 6px;
+    }
+
+    .card.collected {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    button {
+      margin-bottom: 16px;
+      padding: 6px 10px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-<h1>Ligler</h1>
-<div id="content"></div>
+<h1 id="title">Ligler</h1>
+<button id="backBtn" onclick="goBack()" style="display:none;">← Geri</button>
+<div id="content" class="grid"></div>
 
 <script>
   const data = [
-    { league: "UEFA Şampiyonlar Ligi" },
-    { league: "Trendyol Süper Lig" }
+    {
+      league: "UEFA Şampiyonlar Ligi",
+      logo: "images/turnuva/uefa_champions_league.png",
+      teams: [
+      { name: "Paris Saint-Germain FC", logo: "images/teams/psg.png" },
+      { name: "Real Madrid CF", logo: "images/teams/real_madrid.png" },
+      { name: "Manchester City FC", logo: "images/teams/man_city.png" },
+      { name: "FC Bayern München", logo: "images/teams/bayern.png" },
+      { name: "Liverpool FC", logo: "images/teams/liverpool.png" },
+      { name: "Inter Milan", logo: "images/teams/inter_milan.png" },
+      { name: "Chelsea FC", logo: "images/teams/chelsea.png" },
+      { name: "Borussia Dortmund", logo: "images/teams/dortmund.png" },
+      { name: "FC Barcelona", logo: "images/teams/barcelona.png" },
+      { name: "Arsenal FC", logo: "images/teams/arsenal.png" },
+      { name: "Bayer 04 Leverkusen", logo: "images/teams/leverkusen.png" },
+      { name: "Atlético de Madrid", logo: "images/teams/atletico.png" },
+      { name: "SL Benfica", logo: "images/teams/benfica.png" },
+      { name: "Atalanta BC", logo: "images/teams/atalanta.png" },
+      { name: "Villarreal CF", logo: "images/teams/villarreal.png" },
+      { name: "Juventus FC", logo: "images/teams/juventus.png" },
+      { name: "Eintracht Frankfurt", logo: "images/teams/frankfurt.png" },
+      { name: "Club Brugge KV", logo: "images/teams/club_brugge.png" },
+      { name: "Tottenham Hotspur FC", logo: "images/teams/tottenham.png" },
+      { name: "PSV Eindhoven", logo: "images/teams/psv.png" },
+      { name: "AFC Ajax", logo: "images/teams/ajax.png" },
+      { name: "SSC Napoli", logo: "images/teams/napoli.png" },
+      { name: "Sporting CP", logo: "images/teams/sporting.png" },
+      { name: "Olympiacos FC", logo: "images/teams/olympiacos.png" },
+      { name: "SK Slavia Praha", logo: "images/teams/slavia.png" },
+      { name: "FK Bodø/Glimt", logo: "images/teams/bodo_glimt.png" },
+      { name: "FC Copenhagen", logo: "images/teams/copenhagen.png" },
+      { name: "AS Monaco FC", logo: "images/teams/monaco.png" },
+      { name: "Galatasaray SK", logo: "images/teams/galatasaray.png" },
+      { name: "Royale Union Saint-Gilloise", logo: "images/teams/union.png" },
+      { name: "FK Qarabağ", logo: "images/teams/qarabag.png" },
+      { name: "Athletic Club", logo: "images/teams/athletic.png" },
+      { name: "Newcastle United FC", logo: "images/teams/newcastle.png" },
+      { name: "Pafos FC", logo: "images/teams/pafos.png" },
+      { name: "FC Kairat", logo: "images/teams/kairat.png" }
+      ]
+    },
+    {
+      league: "Trendyol Süper Lig",
+      logo: "https://upload.wikimedia.org/wikipedia/tr/6/65/S%C3%BCper_Lig_logo.png",
+      teams: [
+        { name: "Beşiktaş", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/BesiktasJK-Logo.svg" },
+        { name: "Fenerbahçe", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Fenerbah%C3%A7e_SK_Logo.svg" }
+      ]
+    }
   ];
 
-  const content = document.getElementById("content");
+  let currentLeague = null;
 
-  data.forEach(lig => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerText = lig.league;
-    content.appendChild(div);
-  });
+  function loadLeagues() {
+    const content = document.getElementById("content");
+    content.innerHTML = "";
+    document.getElementById("title").innerText = "Ligler";
+    document.getElementById("backBtn").style.display = "none";
+
+    data.forEach(lig => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <img src="${lig.logo}">
+        <div>${lig.league}</div>
+      `;
+      div.onclick = () => loadTeams(lig);
+      content.appendChild(div);
+    });
+  }
+
+  function loadTeams(lig) {
+    currentLeague = lig;
+    const content = document.getElementById("content");
+    content.innerHTML = "";
+    document.getElementById("title").innerText = lig.league;
+    document.getElementById("backBtn").style.display = "block";
+
+    lig.teams.forEach(team => {
+      const key = lig.league + "-" + team.name;
+      const collected = localStorage.getItem(key) === "true";
+
+      const div = document.createElement("div");
+      div.className = "card" + (collected ? " collected" : "");
+      div.innerHTML = `
+        <img src="${team.logo}">
+        <div>${team.name}</div>
+      `;
+
+      div.onclick = () => {
+        const isCollected = div.classList.toggle("collected");
+        localStorage.setItem(key, isCollected);
+      };
+
+      content.appendChild(div);
+    });
+  }
+
+  function goBack() {
+    loadLeagues();
+  }
+
+  // İlk açılış
+  loadLeagues();
 </script>
 
 </body>
